@@ -181,11 +181,7 @@ const exitsitem = (async (company, city, page) => {
         await gettingcitynameJobsArtical(page)
         await page.evaluate((e) =>
           document.getElementById("recurrent_jobs_search_parameters_filterZipcode").value = "");
-        // await page.evaluate((t) => {
-        //   const d = document.querySelector("#filter-zipcode-radius-slider > div.noUi-base > div.noUi-origin")
-        //   d.style.transform = "translate(0%, 0px)"
-
-        // })
+       
 
 
 
@@ -207,37 +203,13 @@ const exitsitem = (async (company, city, page) => {
 
 export const SearchName = (async (company, city, page) => {
   await exitsitem(company, city, page)
-
-
 })
-// export const gettingproductname=(async(page)=>{
-//     try {
-//     await page.waitForSelector('.gridItem--Yd0sa')
-//         const allpage=  await page.$$('.gridItem--Yd0sa')
-//         console.log("uyys",allpage)
-//         for (const iterator of allpage) {
-
-//             // const p=await page.waitForSelector('span.currency--GVKjl')
-//             const name=await page.evaluate((e) => {
-//               return e.querySelector('span.currency--GVKjl').textContent
-
-//             },iterator);
-//             console.log(name)
-//     }
-
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-
-
-// })
 
 
 const gettingcitynameJobsArtical = (async (page) => {
   
-  // await page.waitForSelector('.card-body')
   try {
-    const linkHandles = await page.$$('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span > a');
+   
     const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span >a', elements => {
       return elements.map(e => e.href); // return the href attribute of each <a> element
       // return Array.from(elements);
@@ -246,14 +218,11 @@ const gettingcitynameJobsArtical = (async (page) => {
     
     
     
-    // const restOfElements = linkHandles.slice(5, 10);
     console.log(arrs)
     for (const handle of arrs) {
       console.log("work loop");
        await page.goto(handle)
-      // await handle.evaluate((x)=>x.click())
-      
-      // await page.waitForNavigation({ waitUntil: "networkidle2" }); // wait for navigation to complete
+    
       
       await new Promise(r => setTimeout(r, 4000));
       await page.goBack();
