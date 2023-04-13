@@ -1,5 +1,5 @@
 import fs from "fs"
-import noUiSlider from 'nouislider'
+// import { Emailsystem } from "./emailSystem.js"
 // email and password for thw website
 const Email = "usamaalam1999@gmail.com"
 const Password = "karachipakistan"
@@ -110,7 +110,7 @@ const exitsitem = (async (company, city, page) => {
 
 
       try {
-        await page.waitForTimeout(1000)
+        await page.waitForTimeout(2000)
 
         const thumb = await page.$('.noUi-handle');
         const slider = await page.$('.noUi-base');
@@ -234,28 +234,39 @@ export const SearchName = (async (company, city, page) => {
 
 
 const gettingcitynameJobsArtical = (async (page) => {
-
-  await page.waitForSelector('.card-body')
+  
+  // await page.waitForSelector('.card-body')
   try {
-    await page.waitForTimeout(1000)
-    const AllarticalofSpecificcity = await page.$$('.recurrent-job-box')
-    console.log(AllarticalofSpecificcity, "here its")
-    // await page.goto("https://www.joboo.de/de/jobs-finden/suchformular")
-    for (const iterator of AllarticalofSpecificcity) {
-
-
-
-
+    const linkHandles = await page.$$('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span > a');
+    const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span >a', elements => {
+      return elements.map(e => e.href); // return the href attribute of each <a> element
+      // return Array.from(elements);
+    });
+    
+    
+    
+    
+    // const restOfElements = linkHandles.slice(5, 10);
+    console.log(arrs)
+    for (const handle of arrs) {
+      console.log("work loop");
+       await page.goto(handle)
+      // await handle.evaluate((x)=>x.click())
+      
+      // await page.waitForNavigation({ waitUntil: "networkidle2" }); // wait for navigation to complete
+      
+      await new Promise(r => setTimeout(r, 4000));
+      await page.goBack();
+      await page.waitForTimeout(6000);
     }
-
-
-
   } catch (error) {
-
+    console.log(error.message);
   }
+  
 
 
 
+  // await browser.close();
 
 
 
