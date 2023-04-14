@@ -1,0 +1,4 @@
+Arnstein;Freudenberg;Friedland;Lichtenau;Lichtenfels;Lorch;Waldenburg;Aach;Aachen;Aale
+n;Abenberg;Abensberg;Achern;Achim;Adelsheim;Adenau;Adorf/Vogtl.;Ahaus;Ahlen;Ahrensb
+urg;Aichach;Aichtal;Aken;Albstadt;Alfeld;Allendorf;Allstedt;Alpirsbach;Alsdorf;Alsfeld;Alslebe
+n;Altdorf bei

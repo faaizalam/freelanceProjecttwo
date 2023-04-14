@@ -1,10 +1,10 @@
 import fs from "fs"
-// import { Emailsystem } from "./emailSystem.js"
-// email and password for thw website
 const Email = "usamaalam1999@gmail.com"
 const Password = "karachipakistan"
 
-// down below function open the website and check if the cookies i have if exists then it will use them no need to login
+let PageExist = true
+let index = 1
+
 export const OpenWebsite = (async (url, page) => {
   await page.goto(url)
   console.log("opened Website")
@@ -28,11 +28,6 @@ export const OpenWebsite = (async (url, page) => {
 
 })
 
-
-
-
-// this function accept the button the formal cookies which pops up when web is open
-// also then this function redirect to login function which also see if cookies presnt then return no need to run func
 export const Acceptcookies = (async (url, page) => {
   try {
 
@@ -80,22 +75,13 @@ const LoginAndsaving = (async (page) => {
 
   const cook = await page.cookies()
   await fs.promises.writeFile('./cookiess.json', JSON.stringify(cook, null, 2))
-
-
-
-
 })
-
-
-// this func acctually acting as an child component or func which was used in down below serachname func
-// this func gets company name kellener city array page built in method 
-//  it has static page.type for company becouse its same  then loop of city which is am array
 const exitsitem = (async (company, city, page) => {
 
   await page.type('#recurrent_jobs_search_parameters_filterSearchterm', company)
 
- 
-  
+
+
 
   try {
     for (const cityonebyone of city) {
@@ -114,82 +100,47 @@ const exitsitem = (async (company, city, page) => {
 
         const thumb = await page.$('.noUi-handle');
         const slider = await page.$('.noUi-base');
-        
+
         const thumbBoundingBox = await thumb.boundingBox();
         const sliderBoundingBox = await slider.boundingBox();
-        
+
         await page.mouse.move(
           thumbBoundingBox.x + thumbBoundingBox.width / 2,
           thumbBoundingBox.y + thumbBoundingBox.height / 2,
         );
-        
+
         await page.mouse.down();
-        let v=0
+        let v = 0
         await page.mouse.move(
           // 1100,200,
-          sliderBoundingBox.x + sliderBoundingBox.width,0,
+          sliderBoundingBox.x + sliderBoundingBox.width, 0,
           // sliderBoundingBox.y + sliderBoundingBox.height / 2,
-          
+
           { steps: 20 } // specify the number of steps to simulate the dragging motion
-          
+
         );
         console.log(v)
-        
+
         await page.mouse.up();
-        
 
-        // const thumbBoundingBox = await thumb.boundingBox();
-        // const thumbWidth = thumbBoundingBox.width;
-        
-        // // move the mouse to the center of the thumb
-        // await page.mouse.move(thumbBoundingBox.x + thumbWidth / 2, thumbBoundingBox.y + thumbBoundingBox.height / 2);
-        
-        // // simulate a mouse button press
-        // await page.mouse.down();
-        
-        // // move the mouse to the rightmost position of the slider
-        // await page.mouse.move(thumbBoundingBox.x + thumbBoundingBox.width, thumbBoundingBox.y + thumbBoundingBox.height / 2);
-        
-        // // release the mouse button
-        // await page.mouse.up();
-   
-  
-      
-        
-        
-        
-        
-        
+      await page.waitForTimeout(1000)
 
 
 
-
-        
-       
-         await page.waitForTimeout(1000)
-
-
-     
         await page.waitForSelector("#button-submit-search")
         await page.evaluate(() => {
           document.getElementById("button-submit-search").click()
-          
+
         }
         )
         await page.waitForNavigation();
         // here getting start getting pages and click on them
+        PageExist=true
         await gettingcitynameJobsArtical(page)
         await page.evaluate((e) =>
           document.getElementById("recurrent_jobs_search_parameters_filterZipcode").value = "");
-       
-
-
-
-
-
-
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message, "yes me")
       }
       // console.log("me")
 
@@ -206,37 +157,122 @@ export const SearchName = (async (company, city, page) => {
 })
 
 
+
+let lastElement = null
+let qty = 0
 const gettingcitynameJobsArtical = (async (page) => {
-  
-  try {
-   
-    const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span >a', elements => {
-      return elements.map(e => e.href); // return the href attribute of each <a> element
-      // return Array.from(elements);
+  while (PageExist) {
+    console.log("while loop in")
+    PageExist = await page.evaluate(() => {
+      // div.rounded.text-right.d-none.d-sm-block
+      const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")!==null;
+      return parentDiv
+     
     });
-    
-    
-    
-    
-    console.log(arrs)
-    for (const handle of arrs) {
-      console.log("work loop");
-       await page.goto(handle)
-    
+    console.log(PageExist)
+    try {
       
-      await new Promise(r => setTimeout(r, 4000));
-      await page.goBack();
-      await page.waitForTimeout(6000);
+      const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span >a', elements => {
+        return elements.map(e => e.href); // return the href attribute of each <a> element
+        // return Array.from(elements);
+      });
+      
+      let n=arrs.splice(49,arrs.length)
+      console.log(n.length)
+      for (const handle of n) {
+        qty++
+        console.log("work loop", qty);
+        // try {
+          
+          await page.goto(handle)
+          
+          const currentUrl = await page.url();
+          console.log(currentUrl)
+        
+          await Redirectingpages(page,currentUrl)
+          
+          
+        }
+        console.log("out of loop")
+        if (PageExist) {
+          await NextPagination(page)
+        }
+        
+
+    } catch (error) {
+      console.log("my error page problem")
+      console.log(error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-  }
+}
+})
+
+const NextPagination = async (page) => {
+  index++
   
+  PageExist=await page.evaluate(async (index,PageExist) => {
+    const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")
+    const children = Array.from(parentDiv.children);
+    if (index < children.length) {
+         PageExist=false
+         return false
+        //  console.log(PageExist,"yahooo")
+    }
+    
+    const ClickNext= (async(index) => {
+      console.log(children.length,index,"child")
+      if (index < children.length) {
+        const element = children[index];
+        // const href = await element.$eval('a', a => a.href);
+        // await page.goto(href)
+        
+      }
+
+      
+
+    })
+    await ClickNext(index,PageExist)
+
+  }, index,PageExist)
+  console.log(index,PageExist,"inside pagin")
+  await page.waitForTimeout(2000)
+
+}
+
+
+// let index = 0;
+// const NextPagination = async (page) => {
+//   await page.evaluate(async (index) => {
+//     const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")
+//     const children = Array.from(parentDiv.children);
+//     const ClickNext = (async () => {
+//       if (index < children.length) {
+//         children[index].click()
+//         return index++
+//       } else {
+//         PageExist=false
+//       }
+//     })
+//     await ClickNext()
+//   }, index)
+// }
 
 
 
-  // await browser.close();
 
+const Redirectingpages=(async(page,currentUrl)=>{
+  
+  if (currentUrl.includes("weiterleitung-zu-stellenanzeige")) {
+    console.log("this job artical has been removed")
+    await new Promise(r => setTimeout(r, 2000));
+    await page.goBack()
+    await page.waitForTimeout(6000);
 
+  } else {
+
+    await new Promise(r => setTimeout(r, 4000));
+    await page.goBack();
+    await page.waitForTimeout(6000);
+
+  }
 
 })

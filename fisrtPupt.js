@@ -2,7 +2,8 @@ import puppeteer from 'puppeteer';
 import {Acceptcookies, OpenWebsite, SearchName}  from './helper.js';
 const url = "https://www.joboo.de/de/jobs-finden/suchformular";
 const company = "Kellner";
-const city=["10997"];
+// const city=["Arnstein","Freudenberg"];
+const city=["Freudenberg"];
 
 
 
@@ -39,7 +40,13 @@ try {
 
 
 
+//   await page.goto('https://example.com');
 
+
+
+//   await page.screenshot({ path: 'example.png' });
+
+  // await browser.close();
 
 
 
