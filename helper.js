@@ -1,9 +1,9 @@
 import fs from "fs"
-const Email = "usamaalam1999@gmail.com"
+const Email = "faaiz.13527@iqra.edu.pk"
 const Password = "karachipakistan"
 
 let PageExist = true
-let index = 1
+let index = 0
 
 export const OpenWebsite = (async (url, page) => {
   await page.goto(url)
@@ -78,7 +78,6 @@ const LoginAndsaving = (async (page) => {
 })
 const exitsitem = (async (company, city, page) => {
 
-  await page.type('#recurrent_jobs_search_parameters_filterSearchterm', company)
 
 
 
@@ -86,7 +85,11 @@ const exitsitem = (async (company, city, page) => {
   try {
     for (const cityonebyone of city) {
 
-      console.log("hello")
+      await page.waitForTimeout(1000)
+
+      await page.evaluate((e) =>
+        document.getElementById("recurrent_jobs_search_parameters_filterSearchterm").value = "");
+      await page.type('#recurrent_jobs_search_parameters_filterSearchterm', company)
       await page.waitForTimeout(1000)
       await page.evaluate((e) =>
         document.getElementById("recurrent_jobs_search_parameters_filterZipcode").value = "");
@@ -123,7 +126,7 @@ const exitsitem = (async (company, city, page) => {
 
         await page.mouse.up();
 
-      await page.waitForTimeout(1000)
+        await page.waitForTimeout(3000)
 
 
 
@@ -135,7 +138,7 @@ const exitsitem = (async (company, city, page) => {
         )
         await page.waitForNavigation();
         // here getting start getting pages and click on them
-        PageExist=true
+
         await gettingcitynameJobsArtical(page)
         await page.evaluate((e) =>
           document.getElementById("recurrent_jobs_search_parameters_filterZipcode").value = "");
@@ -152,8 +155,9 @@ const exitsitem = (async (company, city, page) => {
   }
 })
 
-export const SearchName = (async (company, city, page) => {
+export const SearchName = (async (company, city, page, browser) => {
   await exitsitem(company, city, page)
+  await browser.close();
 })
 
 
@@ -161,106 +165,108 @@ export const SearchName = (async (company, city, page) => {
 let lastElement = null
 let qty = 0
 const gettingcitynameJobsArtical = (async (page) => {
+  PageExist = true
   while (PageExist) {
     console.log("while loop in")
+    await page.waitForTimeout(2000)
     PageExist = await page.evaluate(() => {
       // div.rounded.text-right.d-none.d-sm-block
-      const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")!==null;
+      const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block") !== null;
       return parentDiv
-     
+
     });
     console.log(PageExist)
     try {
-      
-      const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span >a', elements => {
+
+      const arrs = await page.$$eval('div.col-md-3.col-12.d-none.d-md-block.p-0.pr-3.pt-2 > span > a', elements => {
         return elements.map(e => e.href); // return the href attribute of each <a> element
         // return Array.from(elements);
       });
-      
-      let n=arrs.splice(49,arrs.length)
-      console.log(n.length)
+
+      console.log(arrs)
+      let n = arrs.splice(10, 2)
+
       for (const handle of n) {
         qty++
         console.log("work loop", qty);
         // try {
-          
-          await page.goto(handle)
-          
-          const currentUrl = await page.url();
-          console.log(currentUrl)
-        
-          await Redirectingpages(page,currentUrl)
-          
-          
-        }
-        console.log("out of loop")
-        if (PageExist) {
-          await NextPagination(page)
-        }
-        
+
+        await page.goto(handle)
+
+        const currentUrl = await page.url();
+        console.log(currentUrl)
+
+        await Redirectingpages(page, currentUrl)
+
+
+      }
+      console.log("out of loop")
+      if (PageExist) {
+        await NextPagination(page)
+      }
+
 
     } catch (error) {
       console.log("my error page problem")
       console.log(error.message);
     }
-}
+  }
 })
+
+
 
 const NextPagination = async (page) => {
   index++
-  
-  PageExist=await page.evaluate(async (index,PageExist) => {
-    const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")
-    const children = Array.from(parentDiv.children);
+
+  const children = await page.$$eval("div.rounded.text-right.d-none.d-sm-block > a", (x) => {
+    return x.map((x) => x.href)
+
+  })
+  PageExist = await page.evaluate(async (index, children) => {
+
+
+
+
+    console.log(children.length, children, "child")
     if (index < children.length) {
-         PageExist=false
-         return false
-        //  console.log(PageExist,"yahooo")
+
+      // const href = await element.$eval('a', a => a.href);
+      // await page.goto(href)
+      return true
+
+    } else {
+
+      return false
+
     }
-    
-    const ClickNext= (async(index) => {
-      console.log(children.length,index,"child")
-      if (index < children.length) {
-        const element = children[index];
-        // const href = await element.$eval('a', a => a.href);
-        // await page.goto(href)
-        
-      }
 
-      
+  }, index, children)
+  console.log(index, PageExist, "inside pagin")
+  if (index < children.length) {
 
-    })
-    await ClickNext(index,PageExist)
+    try {
+      // const element = children[index].click()
+      await page.goto(children[index]);
+      console.log("went to")
+    } catch (error) {
+      // await OpenWebsite()
+      return error.message
 
-  }, index,PageExist)
-  console.log(index,PageExist,"inside pagin")
+    }
+  } else {
+    await page.goto("https://www.joboo.de/de/jobs-finden/suchformular")
+  }
   await page.waitForTimeout(2000)
 
 }
 
 
-// let index = 0;
-// const NextPagination = async (page) => {
-//   await page.evaluate(async (index) => {
-//     const parentDiv = document.querySelector("div.rounded.text-right.d-none.d-sm-block")
-//     const children = Array.from(parentDiv.children);
-//     const ClickNext = (async () => {
-//       if (index < children.length) {
-//         children[index].click()
-//         return index++
-//       } else {
-//         PageExist=false
-//       }
-//     })
-//     await ClickNext()
-//   }, index)
-// }
 
 
 
 
-const Redirectingpages=(async(page,currentUrl)=>{
-  
+const Redirectingpages = (async (page, currentUrl) => {
+
   if (currentUrl.includes("weiterleitung-zu-stellenanzeige")) {
     console.log("this job artical has been removed")
     await new Promise(r => setTimeout(r, 2000));
