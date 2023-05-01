@@ -1,0 +1,19 @@
+/node_modules
+/Emails/*.xlsx
+*xlsx
+// Get the slider element
+const slider = document.querySelector("#filter-zipcode-radius-slider");
+
+// Move the slider handle to the desired position
+const sliderHandle = slider.querySelector(".noUi-handle");
+sliderHandle.style.transform = "translate(0%, 0px)";
+
+// Update the slider value to match the new handle position
+const sliderInstance = noUiSlider.create(slider, {
+  start: [50], // replace with the initial value of your slider
+  range: {
+    min: 0,
+    max: 100,
+  },
+});
+sliderInstance.set([50]); // replace with the new value you want to set
