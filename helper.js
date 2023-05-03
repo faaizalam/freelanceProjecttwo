@@ -6,7 +6,7 @@ import path from 'path';
 import XLSX from 'xlsx';
 import isOnline from "is-online";
 let PageExist = true
-let index = -1
+let index = 0
 
 
 
@@ -134,21 +134,28 @@ const exitsitem = (async (company, city, page) => {
 
 
 				await page.waitForSelector("#button-submit-search")
+				await page.setDefaultNavigationTimeout(100000);
+				
 				await page.evaluate(() => {
 					document.getElementById("button-submit-search").click()
 
 				}
 				)
 				await page.waitForNavigation();
-				// here getting start getting pages and click on them
+				
 
 				await gettingcitynameJobsArtical(page)
-				await page.waitForSelector("#recurrent_jobs_search_parameters_filterZipcode")
-				await page.evaluate((e) =>
-					document.getElementById("recurrent_jobs_search_parameters_filterZipcode").value = "");
-			} catch (error) {
-				console.log(error.message, "yes me")
-				await exitsitem(company,city,page)
+				} catch (error) {
+					while (!(await isOnline())) {
+						console.log("Waiting for network to be restored...");
+						await new Promise((resolve) => setTimeout(resolve, 10000));
+						await page.evaluate(() => {
+							location.reload();
+						});
+						
+					}
+					console.log(error.message, "yes me")
+					
 			}
 			// console.log("me")
 			
@@ -156,7 +163,17 @@ const exitsitem = (async (company, city, page) => {
 		}
 
 	} catch (error) {
-		console.log(error.message,"input not found")
+		while (!(await isOnline())) {
+			console.log("Waiting for network to be restored...");
+			await new Promise((resolve)=>{
+				return setTimeout(()=>{
+					resolve()
+				},10000)
+			})
+			
+		} 
+		
+	console.log(error.message,"input not found")
 
 	}
 })
@@ -177,7 +194,7 @@ let qty = 0
 const gettingcitynameJobsArtical = (async (page) => {
 	PageExist = true
 	console.log(currentCityName)
-	index=-1;
+	index=0;
 
 		
 	
@@ -206,8 +223,14 @@ const gettingcitynameJobsArtical = (async (page) => {
 					qty++
 					console.log("work loop", qty);
 					// try {
-				   
-					await page.goto(handle)
+						try {
+							await page.setDefaultNavigationTimeout(100000);
+							await page.goto(handle)
+							
+						} catch (error) {
+							console.log(" due to slow internet or not internet cant be loaded trying again",error.message)
+							
+						}
 	
 					const currentUrl = await page.url();
 					console.log(currentUrl)
@@ -215,12 +238,12 @@ const gettingcitynameJobsArtical = (async (page) => {
 					await Redirectingpages(page, currentUrl)
 					
 				} catch (error) {
-					console.log(error.message, "you are facing the connectivity issue");
 					while (!(await isOnline())) {
 						console.log("Waiting for network to be restored...");
 						await new Promise((resolve) => setTimeout(resolve, 10000));
 					}
 					
+					console.log(error.message, "you are facing the connectivity issue");
 				}
 
 
@@ -243,7 +266,7 @@ const gettingcitynameJobsArtical = (async (page) => {
 
 
 const NextPagination = async (page) => {
-	index++
+	
 	
 	const children = await page.$$eval("#results > div > div.card-header.bg-white.py-1 > div > div > div.rounded.text-right.d-none.d-sm-block > a", (x) => {
 		return x.map((x) => x.href)
@@ -257,10 +280,7 @@ const NextPagination = async (page) => {
 
 
 		console.log(children.length, children, "child")
-		if (index <=children.length) {
-
-			// const href = await element.$eval('a', a => a.href);
-			// await page.goto(href)
+		if (index <=children.length-1) {
 			return true
 
 		} else {
@@ -271,7 +291,7 @@ const NextPagination = async (page) => {
 
 	}, index, children)
 	console.log(index, PageExist, "inside pagin")
-	if (index <=children.length) {
+	if (index <=children.length-1) {
 
 		try {
 			// const element = children[index].click()
@@ -285,6 +305,7 @@ const NextPagination = async (page) => {
 	} else {
 		await page.goto("https://www.joboo.de/de/jobs-finden/suchformular")
 	}
+	index++
 	await page.waitForTimeout(2000)
 
 }

@@ -1,24 +1,22 @@
 {
-  "type": "module",
-  "name": "lpuppeterin5days",
-  "version": "1.0.0",
-  "description": "",
-  "main": "E.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node E.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "exceljs": "^4.3.0",
-    "fs": "0.0.1-security",
-    "gh-pages": "^5.0.0",
-    "is-online": "^10.0.0",
-    "nouislider": "^15.7.0",
-    "path": "^0.12.7",
-    "puppeteer": "^19.11.1",
-    "react-messenger-chat-plugin": "^3.0.5",
-    "xlsx": "^0.18.5"
-  }
+    "type": "module",
+    "name": "lpuppeterin5days",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node E.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "exceljs": "^4.3.0",
+        "gh-pages": "^5.0.0",
+        "is-online": "^10.0.0",
+        "nouislider": "^15.7.0",
+        "puppeteer": "^19.8.3",
+        "react-messenger-chat-plugin": "^3.0.5",
+        "xlsx": "^0.18.5"
+    }
 }

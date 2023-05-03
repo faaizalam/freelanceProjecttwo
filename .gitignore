@@ -1,6 +1,4 @@
-/node_modules
-/Emails/*.xlsx
-*xlsx
+node_modules
 // Get the slider element
 const slider = document.querySelector("#filter-zipcode-radius-slider");
 
